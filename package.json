@@ -1,0 +1,24 @@
+{
+  "name": "matrixmath",
+  "version": "1.0.0",
+  "author": "Johannes Koggdal <johannes@koggdal.com>",
+  "description": "Library for working with mathematical matrices.",
+  "main": "./index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koggdal/matrixmath.git"
+  },
+  "keywords": [
+    "math",
+    "matrix"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "1.12.x",
+    "expect.js": "0.2.x"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10"
+  }
+}
