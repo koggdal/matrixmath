@@ -8,65 +8,49 @@
  *
  * @constructor
  *
- * @param {Array|number=} opt_rowsOrData If an array, it is interpreted
- *     as data for the matrix. That means the length of the array is the
- *     number of rows. Each item in the array should be an array where
- *     the length is interpreted as the number of columns. Example:
- *     [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
- *     If a number, it will create a matrix with that number of rows.
- *
- * @param {number=} opt_cols The number of columns for the matrix. If
- *     an array was passed as the first argument, this is ignored.
+ * @param {number=} opt_rows The number of rows for the matrix. Default is 0.
+ * @param {number=} opt_cols The number of columns for the matrix. Default is same
+ *     amount of columns as rows.
+ * @param {boolean=} opt_setInitial Whether to set the initial data when created.
+ *     The initial data will be set to the identity matrix if it specifies the same
+ *     amount of rows as columns. Default is true.
  *
  * @example
- * // Create a matrix with data
- * var matrix = new Matrix([
- *   [1, 0, 0],
- *   [0, 1, 0],
- *   [0, 0, 1]
- * ]);
+ * // Create a 3x3 matrix with data
+ * var matrix = new Matrix(3, 3);
+ * matrix.setData(
+ *   1, 0, 0,
+ *   0, 1, 0,
+ *   0, 0, 1
+ * );
  *
  * // Create a matrix filled with zeros
  * // The matrix will be 3 rows and 2 columns
  * var matrix = new Matrix(3, 2);
+ *
+ * // Create an identity matrix
+ * // The matrix will be 3 rows and 3 columns
+ * var matrix = new Matrix(3);
+ *
+ * // Create a matrix with no data set
+ * // The matrix will be 3 rows and 3 columns
+ * var matrix = new Matrix(3, 3, false);
  */
-function Matrix(opt_rowsOrData, opt_cols) {
-  if (Array.isArray(opt_rowsOrData)) {
-    this.rows = opt_rowsOrData;
+function Matrix(opt_rows, opt_cols, opt_setInitial) {
+  this.rows = opt_rows || 0;
+  this.cols = opt_cols || this.rows;
+  this.length = this.rows * this.cols;
 
-  } else {
-    var numRows = opt_rowsOrData || 1;
-    var numCols = opt_cols || 1;
-    var rows = new Array(numRows);
+  var setInitial = opt_setInitial === undefined ? true : opt_setInitial;
 
-    for (var row = 0; row < numRows; row++) {
-      var rowData = new Array(numCols);
-      rows[row] = rowData;
-      for (var col = 0; col < numCols; col++) {
-        rowData[col] = 0;
-      }
+  if (setInitial) {
+    if (this.rows === this.cols) {
+      this.setIdentityData();
+    } else {
+      this.setEmptyData();
     }
-
-    this.rows = rows;
   }
 }
-
-/**
- * Create a new identity matrix for a given size.
- *
- * @param {number} size Number of rows/columns.
- *
- * @return {Matrix} A new matrix.
- */
-Matrix.identity = function(size) {
-  var matrix = new Matrix(size, size);
-
-  for (var i = 0; i < size; i++) {
-    matrix.rows[i][i] = 1;
-  }
-
-  return matrix;
-};
 
 /**
  * Add matrices together and return a new matrix.
@@ -145,25 +129,108 @@ Matrix.divide = function(var_args) {
 };
 
 /**
+ * Set the data for this matrix to be only zeros.
+ */
+Matrix.prototype.setEmptyData = function() {
+  var newData = new Array(this.length);
+
+  for (var i = 0, l = this.length; i < l; i++) {
+    newData[i] = 0;
+  }
+
+  this.setData(newData);
+
+  return this;
+};
+
+/**
+ * Set the data for this matrix to the identity data.
+ *
+ * @return {Matrix} This Matrix instance.
+ */
+Matrix.prototype.setIdentityData = function() {
+  var newData = new Array(this.length);
+
+  for (var i = 0, l = this.length; i < l; i++) {
+    newData[i] = i % (this.cols + 1) ? 0 : 1;
+  }
+
+  this.setData(newData);
+
+  return this;
+};
+
+/**
+ * Set the data for this matrix.
+ *
+ * @param {Array.<number>} data An array of values (numbers).
+ * @param {number=} opt_rows Number of rows in the new data. If not provided,
+ *     the data must match the size of the previous data.
+ * @param {number=} opt_cols Number of columns in the new data. If not provided,
+ *     the data must match the size of the previous data.
+ *
+ * @return {Matrix} This Matrix instance.
+ */
+Matrix.prototype.setData = function(data, opt_rows, opt_cols) {
+  var i, l;
+
+  // If the number of values is different than before, and there was no hint
+  // provided for the size of the new matrix data, we can't modify the data
+  // safely, so we do nothing.
+  if (data.length !== this.length) {
+    if (opt_rows === undefined || opt_cols === undefined) {
+      return this;
+    } else if (opt_rows * opt_cols !== data.length) {
+      return this;
+    }
+  }
+
+  // Clean out previous data
+  for (i = 0, l = this.length; i < l; i++) {
+    delete this[i];
+  }
+
+  // Set new data
+  for (i = 0, l = data.length; i < l; i++) {
+    this[i] = data[i];
+  }
+
+  // Set new metadata
+  this.length = data.length;
+  this.rows = opt_rows || this.rows;
+  this.cols = opt_cols || this.cols;
+
+  return this;
+};
+
+/**
+ * Get the data for this matrix as an array of numbers.
+ *
+ * @return {Array} An array of numbers, representing the data of the matrix.
+ */
+Matrix.prototype.getData = function() {
+  var data = new Array(this.length);
+
+  for (var i = 0, l = this.length; i < l; i++) {
+    data[i] = this[i];
+  }
+
+  data.rows = this.rows;
+  data.cols = this.cols;
+
+  return data;
+};
+
+/**
  * Clone this matrix to a new instance.
  *
  * @return {Matrix} A new matrix for the result.
  */
 Matrix.prototype.clone = function() {
-  var rows = this.rows;
-  var numRows = rows.length;
-  var numCols = rows[0].length;
-  var newRows = new Array(numRows);
+  var matrix = new Matrix(this.rows, this.cols);
+  matrix.setData(this.getData());
 
-  for (var row = 0; row < numRows; row++) {
-    var matrixRow = rows[row];
-    newRows[row] = new Array(numCols);
-    for (var col = 0; col < numCols; col++) {
-      newRows[row][col] = matrixRow[col];
-    }
-  }
-
-  return new Matrix(newRows);
+  return matrix;
 };
 
 /**
@@ -175,34 +242,24 @@ Matrix.prototype.clone = function() {
  * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.add = function(var_args) {
-  var matrices = Array.prototype.slice.call(arguments);
+  var matrices = arguments;
 
-  var numCols = this.rows[0].length;
-  var numRows = this.rows.length;
+  var numValues = this.length;
 
   // Loop through all the matrices passed to the method
   for (var i = 0, l = matrices.length; i < l; i++) {
-
-    // Get the number of rows and columns for the current matrix
-    var matrixRows = matrices[i].rows;
-    var numRowsInput = matrixRows.length;
-    var numColsInput = matrixRows[0].length;
+    var matrix = matrices[i];
 
     // The size of the matrices must match
-    if (numColsInput !== numCols || numRowsInput !== numRows) {
+    if (matrix.cols !== this.cols || matrix.rows !== this.rows) {
       continue;
     }
 
-    // Loop through all rows
-    for (var row = 0; row < numRows; row++) {
-      var matrixRow = matrixRows[row];
+    // Loop through all values
+    for (var n = 0; n < numValues; n++) {
 
-      // Loop through all columns in that row
-      for (var col = 0; col < numCols; col++) {
-
-        // Add the number in that position
-        this.rows[row][col] += matrixRow[col];
-      }
+      // Add the number in that position
+      this[n] += matrix[n];
     }
   }
 
@@ -218,34 +275,24 @@ Matrix.prototype.add = function(var_args) {
  * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.subtract = function(var_args) {
-  var matrices = Array.prototype.slice.call(arguments);
+  var matrices = arguments;
 
-  var numCols = this.rows[0].length;
-  var numRows = this.rows.length;
+  var numValues = this.length;
 
   // Loop through all the matrices passed to the method
   for (var i = 0, l = matrices.length; i < l; i++) {
-
-    // Get the number of rows and columns for the current matrix
-    var matrixRows = matrices[i].rows;
-    var numRowsInput = matrixRows.length;
-    var numColsInput = matrixRows[0].length;
+    var matrix = matrices[i];
 
     // The size of the matrices must match
-    if (numColsInput !== numCols || numRowsInput !== numRows) {
+    if (matrix.cols !== this.cols || matrix.rows !== this.rows) {
       continue;
     }
 
-    // Loop through all rows
-    for (var row = 0; row < numRows; row++) {
+    // Loop through all values
+    for (var n = 0; n < numValues; n++) {
 
-      // Loop through all columns in that row
-      var matrixRow = matrixRows[row];
-      for (var col = 0; col < numCols; col++) {
-
-        // Subtract the number in that position
-        this.rows[row][col] -= matrixRow[col];
-      }
+      // Subtract the number in that position
+      this[n] -= matrix[n];
     }
   }
 
@@ -262,33 +309,29 @@ Matrix.prototype.subtract = function(var_args) {
  * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.multiply = function(var_args) {
-  var matrices = Array.prototype.slice.call(arguments);
+  var matrices = arguments;
 
-  var newRows = this.rows;
+  var newRows = this.getData();
 
   // Loop through all the matrices passed to the method
   for (var i = 0, l = matrices.length; i < l; i++) {
     var matrix = matrices[i];
 
     // Get the number of rows and columns for the target matrix
-    var rowsInTarget = newRows.length;
-    var colsInTarget = newRows[0].length;
+    var rowsInTarget = newRows.rows;
+    var colsInTarget = newRows.cols;
+    var numValuesInTarget = newRows.length;
 
     // A number means we should do a scalar multiplication.
     if (typeof matrix === 'number') {
       var scale = matrix;
+      var factor = 1 / scale; // Used to not get floating point errors
 
-      // Loop through all rows
-      for (var row = 0; row < rowsInTarget; row++) {
-        var matrixRow = newRows[row];
+      // Loop through all values
+      for (var n = 0; n < numValuesInTarget; n++) {
 
-        // Loop through all columns in that row
-        for (var col = 0; col < colsInTarget; col++) {
-
-          // Multiply the number in that position
-          var factor = 1 / scale; // Used to not get floating point errors
-          matrixRow[col] = matrixRow[col] * (scale * factor) / factor;
-        }
+        // Multiply the number in that position
+        newRows[n] = newRows[n] * (scale * factor) / factor;
       }
 
       // Break this iteration here and continue with next matrix
@@ -296,9 +339,8 @@ Matrix.prototype.multiply = function(var_args) {
     }
 
     // Get the number of rows and columns for the current matrix
-    var matrixRows = matrix.rows;
-    var rowsInCurrent = matrixRows.length;
-    var colsInCurrent = matrixRows[0].length;
+    var rowsInCurrent = matrix.rows;
+    var colsInCurrent = matrix.cols;
 
     // The number of rows must match the number of columns in the first matrix
     if (colsInTarget !== rowsInCurrent) {
@@ -308,6 +350,8 @@ Matrix.prototype.multiply = function(var_args) {
     // Create a temporary data array.
     // This will be used to store values in while reading from newRows.
     var tempData = new Array(newRows.length);
+    tempData.rows = newRows.rows;
+    tempData.cols = matrix.cols;
 
     // Loop through each row from the first matrix
     for (var row = 0; row < rowsInTarget; row++) {
@@ -317,15 +361,15 @@ Matrix.prototype.multiply = function(var_args) {
 
         // For each column, loop through each row in the second matrix
         for (var currentRow = 0; currentRow < rowsInCurrent; currentRow++) {
+          var outputIndex = row * tempData.cols + currentCol;
 
           // Create initial values when they don't exist
-          if (!tempData[row]) tempData[row] = new Array(colsInCurrent);
-          if (!tempData[row][currentCol]) tempData[row][currentCol] = 0;
+          if (!tempData[outputIndex]) tempData[outputIndex] = 0;
 
           // Calculate the product of the number at the current position in the first matrix
           // and the current position in the second matrix. Add the product to the previous
           // value at the current position in the output data array.
-          tempData[row][currentCol] += newRows[row][currentRow] * matrixRows[currentRow][currentCol];
+          tempData[outputIndex] += newRows[row * newRows.cols + currentRow] * matrix[currentRow * matrix.cols + currentCol];
         }
       }
     }
@@ -336,7 +380,7 @@ Matrix.prototype.multiply = function(var_args) {
   }
 
   // Set the new data for this Matrix instance
-  this.rows = newRows;
+  this.setData(newRows, newRows.rows, newRows.cols);
 
   return this;
 };
@@ -359,7 +403,7 @@ Matrix.prototype.divide = function(var_args) {
 
     // The matrix must be square. If it's not, remove the
     // matrix from the list.
-    if (matrix.rows.length !== matrix.rows[0].length) {
+    if (matrix.rows !== matrix.cols) {
       matrices.splice(i, 1);
       i--; l--;
       continue;
@@ -386,7 +430,7 @@ Matrix.prototype.divide = function(var_args) {
 Matrix.prototype.power = function(power) {
 
   // Matrices that are not square can't be raised
-  if (this.rows.length !== this.rows[0].length) {
+  if (this.rows !== this.cols) {
     return this;
   }
 
@@ -406,20 +450,18 @@ Matrix.prototype.power = function(power) {
  * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.transpose = function() {
-  var rows = this.rows;
-  var numRows = rows.length;
-  var numCols = rows[0].length;
+  var numRows = this.rows;
+  var numCols = this.cols;
 
-  var newRows = new Array(numCols);
+  var newData = new Array(this.length);
 
   for (var row = 0; row < numRows; row++) {
     for (var col = 0; col < numCols; col++) {
-      if (!newRows[col]) newRows[col] = new Array(rows);
-      newRows[col][row] = rows[row][col];
+      newData[col * numCols + row] = this[row * numCols + col];
     }
   }
 
-  this.rows = newRows;
+  this.setData(newData);
 
   return this;
 };
@@ -434,55 +476,66 @@ Matrix.prototype.transpose = function() {
  * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.invert = function() {
-  var rows = this.rows;
-  var numRows = rows.length;
-  var numCols = rows[0].length;
+  var numRows = this.rows;
+  var numCols = this.cols;
 
   // The matrix must be square
   if (numRows !== numCols) return this;
 
-  var col; // Used in loop further down
-  var removeColumn = function(row) {
-    row.splice(col, 1); return row;
+  var removeRow = function(values, row, colsPerRow) {
+    values.splice(row * colsPerRow, colsPerRow);
+    return values;
+  };
+
+  var removeColumn = function(values, col, colsPerRow) {
+    var newData = [];
+    for (var i = 0, l = values.length; i < l; i++) {
+      if (i % colsPerRow !== col) newData.push(values[i]);
+    }
+    return newData;
   };
 
   var matrixOfMinors = new Matrix(numRows, numCols);
-  var matrixOfMinorsData = matrixOfMinors.rows;
 
   // Loop through each number in the matrix
   var i = 0;
   for (var row = 0; row < numRows; row++) {
-    for (col = 0; col < numCols; col++) {
+    for (var col = 0; col < numCols; col++) {
 
       // We need to get the determinant of the matrix made by the area
       // that is not in the current number's row or column. To do this,
       // we remove the first row and the column where the number is.
-      var matrix = this.clone();
-      matrix.rows.splice(row, 1);
-      matrix.rows.map(removeColumn);
+      var matrix = new Matrix(this.rows, this.cols, false);
+      var newData = this.getData();
+      newData = removeRow(newData, row, this.cols);
+      newData = removeColumn(newData, col, this.cols);
+      matrix.setData(newData, matrix.rows - 1, matrix.cols - 1);
 
       // Set the determinant in the correct position in the matrix of minors.
       // Every other position is multiplied by -1 to get a matrix of cofactors.
-      matrixOfMinorsData[row][col] = (i % 2 ? -1 : 1) * matrix.getDeterminant();
+      matrixOfMinors[row * matrixOfMinors.cols + col] = (i % 2 ? -1 : 1) * matrix.getDeterminant();
 
       i++;
     }
   }
 
-  // Transpose the cofactor matrix of minors to get the adjugate matrix
-  matrixOfMinors.transpose();
-
   // Get the determinant of the original matrix.
   // This could be done with the getDeterminant method, but this is faster.
   var originalDeterminant = 0;
   for (var n = 0; n < numCols; n++) {
-    originalDeterminant += rows[0][n] * matrixOfMinorsData[0][n];
+    originalDeterminant += this[n] * matrixOfMinors[n];
   }
 
   // Cancel everything if the determinant is zero, since inversion can't be done then
   if (originalDeterminant === 0) return this;
 
-  this.rows = matrixOfMinors.multiply(1 / originalDeterminant).rows;
+  // Transpose the cofactor matrix of minors to get the adjugate matrix
+  matrixOfMinors.transpose();
+
+  // Multiply the matrix of minors with the inverse of the determinant,
+  // to get the final inverse of the original matrix.
+  var product = matrixOfMinors.multiply(1 / originalDeterminant);
+  this.setData(product.getData(), product.rows, product.cols);
 
   return this;
 };
@@ -495,56 +548,67 @@ Matrix.prototype.invert = function() {
  */
 Matrix.prototype.getDeterminant = function() {
   var rows = this.rows;
-  var size = rows.length;
+  var cols = this.cols;
 
   // The matrix must be square
-  if (size !== rows[0].length) return null;
+  if (rows !== cols) return null;
 
   // For a 1x1 matrix ( [[a]] ), the determinant is: a
-  if (size === 1) {
-    return rows[0][0];
+  if (rows === 1) {
+    return this[0];
   }
 
   // For a 2x2 matrix ( [[a, b], [c, d]] ), the determinant is: a*d - b*c
-  if (size === 2) {
-    return rows[0][0] * rows[1][1] - rows[0][1] * rows[1][0];
+  if (rows === 2) {
+    return this[0] * this[3] - this[1] * this[2];
   }
 
   // For a 3x3 matrix ( [[a, b, c], [d, e, f], [g, h, i]] ), the determinant
   // is: a*(e*i - f*h) - b*(d*i - f*g) + c*(d*h - e*g)
-  if (size === 3) {
-    var a = rows[0][0];
-    var b = rows[0][1];
-    var c = rows[0][2];
-    var d = rows[1][0];
-    var e = rows[1][1];
-    var f = rows[1][2];
-    var g = rows[2][0];
-    var h = rows[2][1];
-    var i = rows[2][2];
+  if (rows === 3) {
+    var a = this[0];
+    var b = this[1];
+    var c = this[2];
+    var d = this[3];
+    var e = this[4];
+    var f = this[5];
+    var g = this[6];
+    var h = this[7];
+    var i = this[8];
     return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
   }
 
   // For 4x4 or larger matrices
-  if (size >= 4) {
+  if (rows >= 4) {
 
-    var n; // Used in loop further down
-    var removeColumn = function(row) {
-      row.splice(n, 1); return row;
+    var removeRow = function(values, row, colsPerRow) {
+      values.splice(row * colsPerRow, colsPerRow);
+      return values;
+    };
+
+    var removeColumn = function(values, col, colsPerRow) {
+      var newData = [];
+      for (var i = 0, l = values.length; i < l; i++) {
+        if (i % colsPerRow !== col) newData.push(values[i]);
+      }
+      return newData;
     };
 
     var result = 0;
 
     // Loop through each number for the first row
-    for (n = 0; n < size; n++) {
+    for (var col = 0; col < cols; col++) {
 
       // We need to get the determinant of the matrix made by the area
       // that is not in the current number's row or column. To do this,
       // we remove the first row and the column where the number is.
-      var matrix = this.clone();
-      matrix.rows.shift();
-      matrix.rows.map(removeColumn);
-      result += (n % 2 ? -1 : 1) * rows[0][n] * matrix.getDeterminant();
+      var matrix = new Matrix(this.rows, this.cols, false);
+      var newData = this.getData();
+      newData = removeRow(newData, 0, this.cols);
+      newData = removeColumn(newData, col, this.cols);
+      matrix.setData(newData, matrix.rows - 1, matrix.cols - 1);
+
+      result += (col % 2 ? -1 : 1) * this[col] * matrix.getDeterminant();
     }
 
     return result;
@@ -554,28 +618,21 @@ Matrix.prototype.getDeterminant = function() {
 /**
  * Tests if the data of the matrix is the same as the input.
  *
- * @param {Matrix|Array} input Another Matrix instance or an array of rows.
+ * @param {Matrix} input Another Matrix instance.
  *
  * @return {Boolean} True if it's the same.
  */
 Matrix.prototype.equals = function(input) {
-  var thisRows = this.rows;
-  var inputRows = input instanceof Matrix ? input.rows : input;
-  var numRowsThis = thisRows.length;
-  var numColsThis = thisRows[0].length;
-  var numRowsInput = inputRows.length;
-  var numColsInput = inputRows[0].length;
+  if (!(input instanceof Matrix)) return false;
 
   // If the size does not match, it is not equal
-  if (numRowsThis !== numRowsInput || numColsThis !== numColsInput) {
+  if (this.rows !== input.rows || this.cols !== input.cols) {
     return false;
   }
 
   // Check each number and return false if something doesn't match
-  for (var row = 0; row < numRowsThis; row++) {
-    for (var col = 0; col < numColsThis; col++) {
-      if (thisRows[row][col] !== inputRows[row][col]) return false;
-    }
+  for (var i = 0, l = this.length; i < l; i++) {
+    if (this[i] !== input[i]) return false;
   }
 
   // If it hasn't returned before, everything matches and is the same
