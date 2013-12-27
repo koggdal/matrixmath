@@ -237,6 +237,38 @@ describe('Matrix', function() {
       expect(matrix1[3]).to.equal(8);
     });
 
+    it('should set the passed in values as data (values taken from multiple arguments)', function() {
+      var matrix1 = new Matrix(2, 2, false);
+
+      expect(matrix1[0]).to.equal(undefined);
+      expect(matrix1[1]).to.equal(undefined);
+      expect(matrix1[2]).to.equal(undefined);
+      expect(matrix1[3]).to.equal(undefined);
+
+      matrix1.setData(4, 6, 7, 8);
+
+      expect(matrix1[0]).to.equal(4);
+      expect(matrix1[1]).to.equal(6);
+      expect(matrix1[2]).to.equal(7);
+      expect(matrix1[3]).to.equal(8);
+    });
+
+    it('should not set the values if the length is different, and the values come from multiple arguments', function() {
+      var matrix1 = new Matrix(2, 2, false);
+
+      expect(matrix1[0]).to.equal(undefined);
+      expect(matrix1[1]).to.equal(undefined);
+      expect(matrix1[2]).to.equal(undefined);
+      expect(matrix1[3]).to.equal(undefined);
+
+      matrix1.setData(4, 6, 7, 8, 9, 3);
+
+      expect(matrix1[0]).to.equal(undefined);
+      expect(matrix1[1]).to.equal(undefined);
+      expect(matrix1[2]).to.equal(undefined);
+      expect(matrix1[3]).to.equal(undefined);
+    });
+
     it('should not set the values if the length is different, but no size hint provided', function() {
       var matrix1 = new Matrix(2, 2, false);
 

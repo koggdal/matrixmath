@@ -163,7 +163,9 @@ Matrix.prototype.setIdentityData = function() {
 /**
  * Set the data for this matrix.
  *
- * @param {Array.<number>} data An array of values (numbers).
+ * @param {Array.<number>} data An array of values (numbers). Alternatively,
+ *     the data can be provided as separate arguments, but if so, the size
+ *     must match the current size.
  * @param {number=} opt_rows Number of rows in the new data. If not provided,
  *     the data must match the size of the previous data.
  * @param {number=} opt_cols Number of columns in the new data. If not provided,
@@ -173,6 +175,13 @@ Matrix.prototype.setIdentityData = function() {
  */
 Matrix.prototype.setData = function(data, opt_rows, opt_cols) {
   var i, l;
+  var isArray = Array.isArray(data);
+
+  if (!isArray) {
+    data = arguments;
+    opt_rows = undefined;
+    opt_cols = undefined;
+  }
 
   // If the number of values is different than before, and there was no hint
   // provided for the size of the new matrix data, we can't modify the data
