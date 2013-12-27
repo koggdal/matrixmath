@@ -1,10 +1,14 @@
-'use strict';
 /**
- * @author Johannes Koggdal
+ * @module matrixmath/Matrix
  */
+'use strict';
 
 /**
- * A class for representing and working with a mathematical matrix.
+ * @classdesc A class for representing and working with a mathematical matrix.
+ *
+ * @property {number} rows Number of rows.
+ * @property {number} cols Number of cols.
+ * @property {number} length Number of values.
  *
  * @constructor
  *
