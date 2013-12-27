@@ -329,6 +329,18 @@ describe('Matrix', function() {
 
   });
 
+  describe('#toArray()', function() {
+
+    var matrix1 = new Matrix(2, 2);
+
+    it('should get all the values as an array', function() {
+      var data = matrix1.toArray();
+
+      expect(data).to.eql([1, 0, 0, 1]);
+    });
+
+  });
+
   describe('#clone()', function() {
 
     var matrix1 = new Matrix(2, 2).setData([1, 0, 0, 1]);

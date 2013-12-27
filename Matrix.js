@@ -204,19 +204,29 @@ Matrix.prototype.setData = function(data, opt_rows, opt_cols) {
 };
 
 /**
- * Get the data for this matrix as an array of numbers.
+ * Get the data for this matrix as an array of numbers, with additional data
+ * properties for rows and columns counts.
  *
  * @return {Array} An array of numbers, representing the data of the matrix.
  */
 Matrix.prototype.getData = function() {
+  var data = this.toArray();
+  data.rows = this.rows;
+  data.cols = this.cols;
+  return data;
+};
+
+/**
+ * Get the data for this matrix as a regular array.
+ *
+ * @return {Array} An array of numbers.
+ */
+Matrix.prototype.toArray = function() {
   var data = new Array(this.length);
 
   for (var i = 0, l = this.length; i < l; i++) {
     data[i] = this[i];
   }
-
-  data.rows = this.rows;
-  data.cols = this.cols;
 
   return data;
 };
