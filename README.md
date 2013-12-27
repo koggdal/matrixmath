@@ -24,12 +24,13 @@ var Matrix = require('matrixmath/Matrix');
 
 **Constructor**
 
-* new Matrix(rows)
-* new Matrix(numRows, numCols)
+* new Matrix(opt_rows, opt_cols, opt_setInitial)
 
 **Instance properties**
 
 * rows
+* cols
+* length
 
 **Static methods**
 
@@ -40,6 +41,12 @@ var Matrix = require('matrixmath/Matrix');
 
 **Instance methods**
 
+* setIdentityData ()
+* setEmptyData ()
+* setData (data, opt_rows, opt_cols)
+* getData ()
+* toArray ()
+* clone ()
 * add (matrix[,…matrixN])
 * subtract (matrix[,…matrixN])
 * multiply (matrix[,…matrixN])
@@ -48,7 +55,7 @@ var Matrix = require('matrixmath/Matrix');
 * transpose ()
 * invert ()
 * getDeterminant ()
-* equals ()
+* equals (input)
 
 
 
@@ -57,27 +64,30 @@ var Matrix = require('matrixmath/Matrix');
 
 Create a new Matrix instance by using the constructor:
 
-#### new Matrix(rows)
+#### new Matrix()
 
 ```
-var matrix = new Matrix([
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9]
-]);
+var matrix = new Matrix();
 ```
 
-#### new Matrix(numRows, numCols)
+#### new Matrix(opt_rows, opt_cols)
 
 ```
-var matrix = new Matrix(2, 3);
+var matrix = new Matrix(3, 3);
 ```
 ```
-> console.log(matrix.rows);
-[
-  [0, 0, 0],
-  [0, 0, 0]
-]
+> console.log(matrix.toArray());
+[1, 0, 0, 0, 1, 0, 0, 0, 1]
+```
+
+#### new Matrix(opt_rows, opt_cols, opt_setInitial)
+
+```
+var matrix = new Matrix(3, 3, false);
+```
+```
+> console.log(matrix.toArray());
+[undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined]
 ```
 
 ---
@@ -86,14 +96,29 @@ var matrix = new Matrix(2, 3);
 
 #### matrix.rows
 
-The rows property contains the matrix represented as an array of rows, where each row is an array of numbers.
+The rows property contains the number of rows in the matrix.
 
 ```
 > console.log(matrix.rows);
-[
-  [0, 0, 0],
-  [0, 0, 0]
-]
+3
+```
+
+#### matrix.cols
+
+The cols property contains the number of columns in the matrix.
+
+```
+> console.log(matrix.cols);
+3
+```
+
+#### matrix.length
+
+The length property contains the number of values in the matrix.
+
+```
+> console.log(matrix.length);
+9
 ```
 
 ---
@@ -101,24 +126,6 @@ The rows property contains the matrix represented as an array of rows, where eac
 ### Static methods
 
 The following methods will return a new Matrix instance.
-
-
-#### Matrix.identity(size)
-
-Creates an identity matrix with the given number of rows and columns.
-
-```
-var matrix = Matrix.identity(3);
-```
-
-```
-> console.log(matrix.rows);
-[
-  [1, 0, 0],
-  [0, 1, 0],
-  [0, 0, 1]
-]
-```
 
 
 #### Matrix.add(matrix1, matrix2[,…matrixN])
@@ -167,12 +174,129 @@ var matrix = Matrix.divide(matrix1, matrix2);
 The following methods are available on all Matrix instances.
 
 
+
+#### matrix.setIdentityData()
+
+Set the data in the matrix to the identity matrix.
+
+```
+var matrix = new Matrix(3, 3, false).setIdentityData();
+```
+```
+> console.log(matrix.toArray());
+[
+  1, 0, 0
+  0, 1, 0
+  0, 0, 1
+]
+```
+
+
+
+#### matrix.setEmptyData()
+
+Set the data in the matrix to be only zeros.
+
+```
+var matrix = new Matrix(3, 3, false).setEmptyData();
+```
+```
+> console.log(matrix.toArray());
+[
+  0, 0, 0
+  0, 0, 0
+  0, 0, 0
+]
+```
+
+
+
+#### matrix.setData(data, opt_rows_ opt_cols)
+
+Set the data in the matrix to the passed in data.
+
+```
+var matrix = new Matrix(3, 3);
+matrix.setData([1, 2, 3, 4], 2, 2);
+```
+```
+> console.log(matrix.toArray());
+[
+  1, 2
+  3, 4
+]
+```
+
+```
+var matrix = new Matrix(3, 3);
+matrix.setData([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+```
+```
+> console.log(matrix.toArray());
+[
+  1, 2, 3
+  4, 5, 6,
+  7, 8, 9
+]
+```
+
+```
+var matrix = new Matrix(3, 3);
+matrix.setData(1, 2, 3, 4, 5, 6, 7, 8, 9);
+```
+```
+> console.log(matrix.toArray());
+[
+  1, 2, 3
+  4, 5, 6,
+  7, 8, 9
+]
+```
+
+
+
+#### matrix.getData()
+
+Get the data in the matrix as an array with extra data.
+
+```
+var matrix = new Matrix(2, 2);
+```
+```
+> console.log(matrix.getData());
+[
+  1, 0,
+  0, 1
+]
+> console.log(matrix.getData().rows);
+2
+> console.log(matrix.getData().cols);
+2
+```
+
+
+
+#### matrix.toArray()
+
+Get the data in the matrix as an array.
+
+```
+var matrix = new Matrix(2, 2);
+```
+```
+> console.log(matrix.toArray());
+[
+  1, 0,
+  0, 1
+]
+```
+
 #### matrix.clone()
 
 Returns a new matrix with the same content as the first one.
 
 ```
-var matrix = Matrix.identity(2);
+var matrix = new Matrix(2, 2);
 var matrix1 = matrix.clone();
 ```
 
@@ -182,15 +306,13 @@ var matrix1 = matrix.clone();
 Adds all the matrices into the original matrix. All matrices must have the same size as the original one. If a matrix is found that is not the same size, it is skipped.
 
 ```
-var matrix = new Matrix([ [1, 2, 3] ]);
-var matrix1 = new Matrix([ [2, 4, 6] ]);
+var matrix = new Matrix(1, 3).setData(1, 2, 3);
+var matrix1 = new Matrix(1, 3).setData(2, 4, 6);
 matrix.add(matrix1);
 ```
 ```
-> console.log(matrix.rows);
-[
-  [3, 6, 9]
-]
+> console.log(matrix.toArray());
+[3, 6, 9]
 ```
 
 
@@ -199,15 +321,13 @@ matrix.add(matrix1);
 Subtracts all the matrices from the original matrix. All matrices must have the same size as the original one. If a matrix is found that is not the same size, it is skipped.
 
 ```
-var matrix = new Matrix([ [1, 2, 3] ]);
-var matrix1 = new Matrix([ [2, 4, 6] ]);
+var matrix = new Matrix(1, 3).setData(1, 2, 3);
+var matrix1 = new Matrix(1, 3).setData(2, 4, 6);
 matrix.subtract(matrix1);
 ```
 ```
-> console.log(matrix.rows);
-[
-  [-2, -2, -3]
-]
+> console.log(matrix.toArray());
+[-2, -2, -3]
 ```
 
 
@@ -218,28 +338,22 @@ Multiplies all the matrices into the original matrix. All matrices must either b
 The arguments can be either matrices or numbers. If a number is seen, a scalar multiplication is made.
 
 ```
-var matrix = new Matrix([ [1, 2], [3, 4] ]);
-var matrix1 = new Matrix( [[2, 4], [6, 8] ]);
+var matrix = new Matrix(2, 2).setData(1, 2, 3, 4);
+var matrix1 = new Matrix(2, 2).setData(2, 4, 6, 8);
 matrix.multiply(matrix1);
 ```
 ```
-> console.log(matrix.rows);
-[
-  [14, 20],
-  [30, 44]
-]
+> console.log(matrix.toArray());
+[14, 20, 30, 44]
 ```
 
 ```
-var matrix = new Matrix([ [1, 2], [3, 4] ]);
+var matrix = new Matrix(2, 2).setData(1, 2, 3, 4);
 matrix.multiply(3);
 ```
 ```
-> console.log(matrix.rows);
-[
-  [3, 6],
-  [9, 12]
-]
+> console.log(matrix.toArray());
+[3, 6, 9, 12]
 ```
 
 
@@ -248,16 +362,13 @@ matrix.multiply(3);
 Divides all the matrices from the original matrix. All matrices must be square and of the same size as the original matrix.
 
 ```
-var matrix = new Matrix([ [1, 0], [0, 1] ]);
-var matrix1 = new Matrix( [[2, 0], [0, 2] ]);
+var matrix = new Matrix(2, 2).setData(1, 0, 0, 1);
+var matrix1 = new Matrix(2, 2).setData(2, 0, 0, 2);
 matrix.divide(matrix1);
 ```
 ```
-> console.log(matrix.rows);
-[
-  [0.5, 0],
-  [0, -0.5]
-]
+> console.log(matrix.toArray());
+[0.5, 0, 0, -0.5]
 ```
 
 #### matrix.power(number)
@@ -265,15 +376,12 @@ matrix.divide(matrix1);
 Raises the matrix to the the given power.
 
 ```
-var matrix = new Matrix([[1, 2], [4, 1]]);
+var matrix = new Matrix(2, 2).setData(1, 2, 4, 1);
 matrix.power(3);
 ```
 ```
-> console.log(matrix.rows);
-[
-  [25, 22],
-  [44, 25]
-]
+> console.log(matrix.toArray());
+[25, 22, 44, 25]
 ```
 
 #### matrix.transpose()
@@ -281,18 +389,12 @@ matrix.power(3);
 Transposes the matrix.
 
 ```
-var matrix = new Matrix([
-  [1, 2],
-  [4, 1]
-]);
+var matrix = new Matrix(2, 2).setData(1, 2, 4, 1);
 matrix.transpose();
 ```
 ```
-> console.log(matrix.rows);
-[
-  [1, 4],
-  [2, 1]
-]
+> console.log(matrix.toArray());
+[1, 4, 2, 1]
 ```
 
 #### matrix.invert()
@@ -300,19 +402,19 @@ matrix.transpose();
 Inverts the matrix.
 
 ```
-var matrix = new Matrix([
-  [3, 0, 2],
-  [2, 0, -2],
-  [0, 1, 1]
-]);
+var matrix = new Matrix(3, 3).setData(
+  3, 0, 2,
+  2, 0, -2,
+  0, 1, 1
+);
 matrix.invert();
 ```
 ```
-> console.log(matrix.rows);
+> console.log(matrix.toArray());
 [
-  [0.2, 0.2, 0],
-  [-0.2, 0.3, 1],
-  [0.2, -0.3, 0]
+  0.2, 0.2, 0,
+  -0.2, 0.3, 1,
+  0.2, -0.3, 0
 ]
 ```
 
@@ -321,7 +423,7 @@ matrix.invert();
 Gets the determinant of the matrix. The matrix must be square for this to be possible. If it's not square, this will return `null`.
 
 ```
-var matrix = new Matrix([[4, 6], [3, 8]]);
+var matrix = new Matrix(2, 2).setData(4, 6, 3, 8);
 var determinant = matrix.getDeterminant();
 ```
 ```
@@ -334,9 +436,9 @@ var determinant = matrix.getDeterminant();
 Tests if the matrix has the same content as another matrix. Returns `true` if it has, `false` otherwise.
 
 ```
-var matrix = new Matrix([[3, 0], [2, 0], [0, 1]]);
-var matrix1 = new Matrix([[3, 0], [2, 0], [0, 1]]);
-var matrix2 = new Matrix([[3, 0], [2, 0]]);
+var matrix = new Matrix(3, 2).setData(3, 0, 2, 0, 0, 1);
+var matrix1 = new Matrix(3, 2).setData(3, 0, 2, 0, 0, 1);
+var matrix2 = new Matrix(2, 2).setData(3, 0, 2, 0);
 
 matrix.equals(matrix1); // true
 matrix.equals(matrix2); // false
@@ -350,7 +452,7 @@ This module is versioned according to [Semantic Versioning](http://semver.org/) 
 
 ## Unit tests
 
-The Matrix class is fully unit tested with over 60 tests. It uses mocha and expect.js and can be run from node.js in the command line.
+The Matrix class is fully unit tested with over 70 tests. It uses mocha and expect.js and can be run from node.js in the command line.
 
 
 ## License
