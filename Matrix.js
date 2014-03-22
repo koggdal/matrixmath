@@ -622,17 +622,18 @@ Matrix.prototype.getDeterminant = function() {
 
     var result = 0;
 
+    var matrix = new Matrix(this.rows, this.cols, false);
+
     // Loop through each number for the first row
     for (var col = 0; col < cols; col++) {
 
       // We need to get the determinant of the matrix made by the area
       // that is not in the current number's row or column. To do this,
       // we remove the first row and the column where the number is.
-      var matrix = new Matrix(this.rows, this.cols, false);
       var newData = this.getData();
       newData = removeRow(newData, 0, this.cols);
       newData = removeColumn(newData, col, this.cols);
-      matrix.setData(newData, matrix.rows - 1, matrix.cols - 1);
+      matrix.setData(newData, this.rows - 1, this.cols - 1);
 
       result += (col % 2 ? -1 : 1) * this[col] * matrix.getDeterminant();
     }
