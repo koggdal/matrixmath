@@ -518,7 +518,7 @@ Matrix.prototype.invert = function() {
     return newData;
   };
 
-  var matrixOfMinors = new Matrix(numRows, numCols);
+  var matrixOfMinors = new Matrix(numRows, numCols, false);
   var matrix = new Matrix(this.rows, this.cols, false);
 
   // Loop through each number in the matrix
