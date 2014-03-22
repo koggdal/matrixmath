@@ -622,7 +622,9 @@ Matrix.prototype.getDeterminant = function() {
 
     var result = 0;
 
-    var matrix = new Matrix(this.rows, this.cols, false);
+    // By using a cache, only the first call to the method will cause a memory increase.
+    var cache = this._cache || (this._cache = {});
+    var matrix = cache.tempMatrix || (cache.tempMatrix = new Matrix(this.rows, this.cols, false));
 
     // Loop through each number for the first row
     for (var col = 0; col < cols; col++) {
