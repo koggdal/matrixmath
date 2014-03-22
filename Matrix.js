@@ -44,6 +44,7 @@ function Matrix(opt_rows, opt_cols, opt_setInitial) {
   this.rows = opt_rows || 0;
   this.cols = opt_cols || this.rows;
   this.length = this.rows * this.cols;
+  this._cache = null;
 
   var setInitial = opt_setInitial === undefined ? true : opt_setInitial;
 
@@ -518,8 +519,10 @@ Matrix.prototype.invert = function() {
     return newData;
   };
 
-  var matrixOfMinors = new Matrix(numRows, numCols, false);
-  var matrix = new Matrix(this.rows, this.cols, false);
+  // By using a cache, only the first call to invert will cause a memory increase.
+  var cache = this._cache || (this._cache = {});
+  var matrixOfMinors = cache.matrixOfMinors || (cache.matrixOfMinors = new Matrix(numRows, numCols, false));
+  var matrix = cache.tempMatrix || (cache.tempMatrix = new Matrix(this.rows, this.cols, false));
 
   // Loop through each number in the matrix
   var i = 0;
