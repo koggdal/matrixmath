@@ -46,6 +46,7 @@ var Matrix = require('matrixmath/Matrix');
 * setData (data, opt_rows, opt_cols)
 * getData ()
 * toArray ()
+* toLogString ()
 * clone ()
 * add (matrix[,…matrixN])
 * subtract (matrix[,…matrixN])
@@ -289,6 +290,52 @@ var matrix = new Matrix(2, 2);
   1, 0,
   0, 1
 ]
+```
+
+
+
+#### matrix.toLogString([opt_indentation[, opt_separator[, opt_start[, opt_end]]]])
+
+Get the data for this matrix as a formatted string, which is useful for logging and debugging. It will be formatted with line breaks to visualize the rows and columns.
+
+```
+var matrix = new Matrix(3, 3);
+```
+
+```
+> console.log(matrix.toLogString());
+[
+  1  0  0
+  0  1  0
+  0  0  1
+]
+```
+
+```
+> console.log(matrix.toLogString(5));
+[
+     1  0  0
+     0  1  0
+     0  0  1
+]
+```
+
+```
+> console.log(matrix.toLogString('  ', ' | '));
+[
+  1 | 0 | 0
+  0 | 1 | 0
+  0 | 0 | 1
+]
+```
+
+```
+> console.log(matrix.toLogString(0, ' | ', '-- start --', '-- end --'));
+-- start --
+1 | 0 | 0
+0 | 1 | 0
+0 | 0 | 1
+-- end --
 ```
 
 #### matrix.clone()

@@ -246,6 +246,51 @@ Matrix.prototype.toArray = function() {
 };
 
 /**
+ * Get the data for this matrix as a formatted string, which is useful for
+ * logging and debugging. It will be formatted with line breaks to visualize
+ * the rows and columns.
+ *
+ * @param {number|string=} opt_indentation Optional argument to control
+ *     indentation in the output string. If set to a number, the indentation
+ *     will be that many spaces wide. If it is a string, the indentation will be
+ *     this string. It will default to two spaces.
+ * @param {string=} opt_separator Optional argument to control what separates
+ *     the values in the output string. It will default to two spaces.
+ * @param {string=} opt_start String to start the output with. Default is '['.
+ * @param {string=} opt_end String to end the output with. Default is ']'.
+ *
+ * @return {string} A string representation of the data.
+ */
+Matrix.prototype.toLogString = function(opt_indentation, opt_separator, opt_start, opt_end) {
+  var array = this.toArray();
+
+  var beginning;
+  var sep;
+
+  var separator = typeof opt_separator === 'string' ? opt_separator : '  ';
+  var indentation = '  ';
+
+  if (typeof opt_indentation === 'number') {
+    indentation = (new Array(Math.max(0, opt_indentation) + 1)).join(' ');
+  } else if (typeof opt_indentation === 'string') {
+    indentation = opt_indentation;
+  }
+
+  var start = typeof opt_start === 'string' ? opt_start : '[';
+  var end = typeof opt_end === 'string' ? opt_end : ']';
+
+  var string = start;
+  for (var i = 0, l = array.length; i < l; i++) {
+    beginning = i % this.cols === 0 ? '\n' + indentation : '';
+    sep = i % this.cols === this.cols - 1 ? '' : separator;
+    string += beginning + array[i] + sep;
+  }
+  string += '\n' + end;
+
+  return string;
+};
+
+/**
  * Clone this matrix to a new instance.
  *
  * @return {Matrix} A new matrix for the result.

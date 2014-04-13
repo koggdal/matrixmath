@@ -373,6 +373,149 @@ describe('Matrix', function() {
 
   });
 
+  describe('#toLogString()', function() {
+
+    var matrix1 = new Matrix(3, 3);
+
+    it('should format all the values as a string with columns and rows', function() {
+      var string = matrix1.toLogString();
+
+      var expectedString = '[\n';
+      expectedString += '  1  0  0\n';
+      expectedString += '  0  1  0\n';
+      expectedString += '  0  0  1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should format all the values as a string with the provided number of spaces as indentation', function() {
+      var string = matrix1.toLogString(5);
+
+      var expectedString = '[\n';
+      expectedString += '     1  0  0\n';
+      expectedString += '     0  1  0\n';
+      expectedString += '     0  0  1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should convert negative space count to 0', function() {
+      var string = matrix1.toLogString(-5);
+
+      var expectedString = '[\n';
+      expectedString += '1  0  0\n';
+      expectedString += '0  1  0\n';
+      expectedString += '0  0  1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should format all the values as a string with the provided string used for indentation', function() {
+      var string = matrix1.toLogString('\t');
+
+      var expectedString = '[\n';
+      expectedString += '\t1  0  0\n';
+      expectedString += '\t0  1  0\n';
+      expectedString += '\t0  0  1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should format all the values as a string with the provided string used as separator', function() {
+      var string = matrix1.toLogString('  ', ' | ');
+
+      var expectedString = '[\n';
+      expectedString += '  1 | 0 | 0\n';
+      expectedString += '  0 | 1 | 0\n';
+      expectedString += '  0 | 0 | 1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should format all the values as a string with the provided string used as start', function() {
+      var string = matrix1.toLogString('  ', ' | ', '---');
+
+      var expectedString = '---\n';
+      expectedString += '  1 | 0 | 0\n';
+      expectedString += '  0 | 1 | 0\n';
+      expectedString += '  0 | 0 | 1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should format all the values as a string with the provided string used as end', function() {
+      var string = matrix1.toLogString('  ', ' | ', '---', '-=-');
+
+      var expectedString = '---\n';
+      expectedString += '  1 | 0 | 0\n';
+      expectedString += '  0 | 1 | 0\n';
+      expectedString += '  0 | 0 | 1\n';
+      expectedString += '-=-';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should work for large matrices', function() {
+      var matrix1 = new Matrix(5, 5);
+      var string = matrix1.toLogString();
+
+      var expectedString = '[\n';
+      expectedString += '  1  0  0  0  0\n';
+      expectedString += '  0  1  0  0  0\n';
+      expectedString += '  0  0  1  0  0\n';
+      expectedString += '  0  0  0  1  0\n';
+      expectedString += '  0  0  0  0  1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should work for small matrices', function() {
+      var matrix1 = new Matrix(2, 2);
+      var string = matrix1.toLogString();
+
+      var expectedString = '[\n';
+      expectedString += '  1  0\n';
+      expectedString += '  0  1\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should work for tall matrices', function() {
+      var matrix1 = new Matrix(4, 2);
+      var string = matrix1.toLogString();
+
+      var expectedString = '[\n';
+      expectedString += '  0  0\n';
+      expectedString += '  0  0\n';
+      expectedString += '  0  0\n';
+      expectedString += '  0  0\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+    it('should work for wide matrices', function() {
+      var matrix1 = new Matrix(2, 4);
+      var string = matrix1.toLogString();
+
+      var expectedString = '[\n';
+      expectedString += '  0  0  0  0\n';
+      expectedString += '  0  0  0  0\n';
+      expectedString += ']';
+
+      expect(string).to.equal(expectedString);
+    });
+
+  });
+
   describe('#clone()', function() {
 
     var matrix1 = new Matrix(2, 2).setData([1, 0, 0, 1]);
