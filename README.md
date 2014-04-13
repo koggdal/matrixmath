@@ -77,8 +77,12 @@ var matrix = new Matrix();
 var matrix = new Matrix(3, 3);
 ```
 ```
-> console.log(matrix.toArray());
-[1, 0, 0, 0, 1, 0, 0, 0, 1]
+> console.log(matrix.toLogString());
+[
+  1  0  0
+  0  1  0
+  0  0  1
+]
 ```
 
 #### new Matrix(opt_rows, opt_cols, opt_setInitial)
@@ -87,8 +91,12 @@ var matrix = new Matrix(3, 3);
 var matrix = new Matrix(3, 3, false);
 ```
 ```
-> console.log(matrix.toArray());
-[undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined]
+> console.log(matrix.toLogString());
+[
+  undefined  undefined  undefined
+  undefined  undefined  undefined
+  undefined  undefined  undefined
+]
 ```
 
 ---
@@ -184,11 +192,11 @@ Set the data in the matrix to the identity matrix.
 var matrix = new Matrix(3, 3, false).setIdentityData();
 ```
 ```
-> console.log(matrix.toArray());
+> console.log(matrix.toLogString());
 [
-  1, 0, 0
-  0, 1, 0
-  0, 0, 1
+  1  0  0
+  0  1  0
+  0  0  1
 ]
 ```
 
@@ -202,11 +210,11 @@ Set the data in the matrix to be only zeros.
 var matrix = new Matrix(3, 3, false).setEmptyData();
 ```
 ```
-> console.log(matrix.toArray());
+> console.log(matrix.toLogString());
 [
-  0, 0, 0
-  0, 0, 0
-  0, 0, 0
+  0  0  0
+  0  0  0
+  0  0  0
 ]
 ```
 
@@ -221,10 +229,10 @@ var matrix = new Matrix(3, 3);
 matrix.setData([1, 2, 3, 4], 2, 2);
 ```
 ```
-> console.log(matrix.toArray());
+> console.log(matrix.toLogString());
 [
-  1, 2
-  3, 4
+  1  2
+  3  4
 ]
 ```
 
@@ -233,11 +241,11 @@ var matrix = new Matrix(3, 3);
 matrix.setData([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 ```
 ```
-> console.log(matrix.toArray());
+> console.log(matrix.toLogString());
 [
-  1, 2, 3
-  4, 5, 6,
-  7, 8, 9
+  1  2  3
+  4  5  6
+  7  8  9
 ]
 ```
 
@@ -246,11 +254,11 @@ var matrix = new Matrix(3, 3);
 matrix.setData(1, 2, 3, 4, 5, 6, 7, 8, 9);
 ```
 ```
-> console.log(matrix.toArray());
+> console.log(matrix.toLogString());
 [
-  1, 2, 3
-  4, 5, 6,
-  7, 8, 9
+  1  2  3
+  4  5  6
+  7  8  9
 ]
 ```
 
@@ -265,10 +273,7 @@ var matrix = new Matrix(2, 2);
 ```
 ```
 > console.log(matrix.getData());
-[
-  1, 0,
-  0, 1
-]
+[1, 0, 0, 1]
 > console.log(matrix.getData().rows);
 2
 > console.log(matrix.getData().cols);
@@ -286,10 +291,7 @@ var matrix = new Matrix(2, 2);
 ```
 ```
 > console.log(matrix.toArray());
-[
-  1, 0,
-  0, 1
-]
+[1, 0, 0, 1]
 ```
 
 
@@ -358,8 +360,10 @@ var matrix1 = new Matrix(1, 3).setData(2, 4, 6);
 matrix.add(matrix1);
 ```
 ```
-> console.log(matrix.toArray());
-[3, 6, 9]
+> console.log(matrix.toLogString());
+[
+  3  6  9
+]
 ```
 
 
@@ -373,8 +377,10 @@ var matrix1 = new Matrix(1, 3).setData(2, 4, 6);
 matrix.subtract(matrix1);
 ```
 ```
-> console.log(matrix.toArray());
-[-2, -2, -3]
+> console.log(matrix.toLogString());
+[
+  -2  -2  -3
+]
 ```
 
 
@@ -390,8 +396,11 @@ var matrix1 = new Matrix(2, 2).setData(2, 4, 6, 8);
 matrix.multiply(matrix1);
 ```
 ```
-> console.log(matrix.toArray());
-[14, 20, 30, 44]
+> console.log(matrix.toLogString());
+[
+  14  20
+  30  44
+]
 ```
 
 ```
@@ -399,8 +408,11 @@ var matrix = new Matrix(2, 2).setData(1, 2, 3, 4);
 matrix.multiply(3);
 ```
 ```
-> console.log(matrix.toArray());
-[3, 6, 9, 12]
+> console.log(matrix.toLogString());
+[
+  3  6
+  9  12
+]
 ```
 
 
@@ -414,8 +426,11 @@ var matrix1 = new Matrix(2, 2).setData(2, 0, 0, 2);
 matrix.divide(matrix1);
 ```
 ```
-> console.log(matrix.toArray());
-[0.5, 0, 0, -0.5]
+> console.log(matrix.toLogString());
+[
+  0.5  0
+  0  -0.5
+]
 ```
 
 #### matrix.power(number)
@@ -427,8 +442,11 @@ var matrix = new Matrix(2, 2).setData(1, 2, 4, 1);
 matrix.power(3);
 ```
 ```
-> console.log(matrix.toArray());
-[25, 22, 44, 25]
+> console.log(matrix.toLogString());
+[
+  25  22
+  44  25
+]
 ```
 
 #### matrix.transpose()
@@ -440,8 +458,11 @@ var matrix = new Matrix(2, 2).setData(1, 2, 4, 1);
 matrix.transpose();
 ```
 ```
-> console.log(matrix.toArray());
-[1, 4, 2, 1]
+> console.log(matrix.toLogString());
+[
+  1  4
+  2  1
+]
 ```
 
 #### matrix.invert()
@@ -457,11 +478,11 @@ var matrix = new Matrix(3, 3).setData(
 matrix.invert();
 ```
 ```
-> console.log(matrix.toArray());
+> console.log(matrix.toLogString());
 [
-  0.2, 0.2, 0,
-  -0.2, 0.3, 1,
-  0.2, -0.3, 0
+  0.2  0.2  0
+  -0.2  0.3  1
+  0.2  -0.3  0
 ]
 ```
 
