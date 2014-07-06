@@ -322,10 +322,7 @@ Matrix.prototype.copy = function(matrix) {
  * @return {Matrix} A new matrix for the result.
  */
 Matrix.prototype.clone = function() {
-  var matrix = new Matrix(this.rows, this.cols);
-  matrix.setData(this.getData());
-
-  return matrix;
+  return new Matrix(this.rows, this.cols, false).copy(this);
 };
 
 /**
