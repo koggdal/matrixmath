@@ -402,11 +402,52 @@ Matrix.prototype.subtract = function(var_args) {
  */
 Matrix.prototype.multiply = function(var_args) {
   var matrices = arguments;
+  var startIndex = 0;
+
+  // If this matrix is an identity matrix, multiplying it with anything will
+  // just result in this matrix having the exact same data as the matrix to
+  // multiply by. We can avoid one step of multiplication if we make a shortcut
+  // and just copy the data from the next matrix.
+  if (this.isIdentity()) {
+    var next;
+    while ((next = matrices[startIndex]) !== undefined) {
+
+      // If a number was found, we must break out and start the multiplication
+      // with this number. Special case is the number 1 though, as that will
+      // result in the same as well.
+      if (typeof next === 'number') {
+        if (next === 1) {
+          startIndex++;
+          continue;
+        } else {
+          break;
+        }
+      }
+
+      // If a matrix was found, we can safely skip the matrix (either it's an
+      // identity matrix and we'll continue looking for a matrix that isn't an
+      // identity matrix, or it's not an identity matrix and we'll just copy
+      // its data and start multiplying by the next matrix in line).
+      startIndex++;
+      if (!next.isIdentity()) break;
+    }
+
+    // No matrix was found in line, meaning we are only dealing with identity
+    // matrices, so it's fine to bail out early, as it will just result in an
+    // identity matrix.
+    if (!next) return this;
+
+    // If we did find a matrix, we will copy the data from that matrix into this
+    // one and start multiplying by the next matrix in line.
+    if (typeof next !== 'number') {
+      this.copy(next);
+    }
+  }
 
   var newRows = this.getData();
 
   // Loop through all the matrices passed to the method
-  for (var i = 0, l = matrices.length; i < l; i++) {
+  for (var i = startIndex, l = matrices.length; i < l; i++) {
     var matrix = matrices[i];
 
     // Get the number of rows and columns for the target matrix
@@ -429,6 +470,9 @@ Matrix.prototype.multiply = function(var_args) {
       // Break this iteration here and continue with next matrix
       continue;
     }
+
+    // Multiplying with an identity matrix will not make any changes
+    if (matrix.isIdentity()) continue;
 
     // Get the number of rows and columns for the current matrix
     var rowsInCurrent = matrix.rows;

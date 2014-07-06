@@ -718,6 +718,34 @@ describe('Matrix', function() {
       expect(matrix1[1]).to.equal(324);
     });
 
+    it('should handle identity matrices', function() {
+      var matrix1 = new Matrix(2, 2);
+      var matrix2 = new Matrix(2, 2);
+      var matrix3 = new Matrix(2, 2).setData([1, 2, 3, 4]);
+      var matrix4 = new Matrix(2, 2);
+      var matrix5 = new Matrix(2, 2).setData([2, 4, 6, 8]);
+      var matrix6 = new Matrix(2, 2);
+      var matrix7 = new Matrix(2, 2).setData([3, 6, 9, 12]);
+      matrix1.multiply(matrix2, matrix3, matrix4, matrix5, matrix6, matrix7);
+      expect(matrix1[1]).to.equal(324);
+    });
+
+    it('should handle identity matrices and scalar multiplications', function() {
+      var matrix1 = new Matrix(2, 2);
+      var matrix2 = new Matrix(2, 2);
+      var scalar1 = 1;
+      var scalar2 = 2;
+      var matrix3 = new Matrix(2, 2).setData([1, 2, 3, 4]);
+      var matrix4 = new Matrix(2, 2);
+      var scalar3 = 1;
+      var scalar4 = 0.5;
+      var matrix5 = new Matrix(2, 2).setData([2, 4, 6, 8]);
+      var matrix6 = new Matrix(2, 2);
+      var matrix7 = new Matrix(2, 2).setData([3, 6, 9, 12]);
+      matrix1.multiply(matrix2, scalar1, scalar2, matrix3, matrix4, scalar3, scalar4, matrix5, matrix6, matrix7);
+      expect(matrix1[1]).to.equal(324);
+    });
+
     it('should multiply a number', function() {
       var matrix1 = new Matrix(2, 2).setData([1, 2, 3, 4]);
       matrix1.multiply(3);
