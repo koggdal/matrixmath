@@ -175,20 +175,22 @@ Matrix.prototype.setIdentityData = function() {
 Matrix.prototype.setData = function(data, opt_rows, opt_cols) {
   var i, l;
   var isArray = Array.isArray(data);
+  var rows = opt_rows;
+  var cols = opt_cols;
 
   if (!isArray) {
     data = arguments;
-    opt_rows = undefined;
-    opt_cols = undefined;
+    rows = undefined;
+    cols = undefined;
   }
 
   // If the number of values is different than before, and there was no hint
   // provided for the size of the new matrix data, we can't modify the data
   // safely, so we do nothing.
   if (data.length !== this.length) {
-    if (opt_rows === undefined || opt_cols === undefined) {
+    if (rows === undefined || cols === undefined) {
       return this;
-    } else if (opt_rows * opt_cols !== data.length) {
+    } else if (rows * cols !== data.length) {
       return this;
     }
   }
@@ -205,8 +207,8 @@ Matrix.prototype.setData = function(data, opt_rows, opt_cols) {
 
   // Set new metadata
   this.length = data.length;
-  this.rows = opt_rows || this.rows;
-  this.cols = opt_cols || this.cols;
+  this.rows = rows || this.rows;
+  this.cols = cols || this.cols;
 
   return this;
 };
