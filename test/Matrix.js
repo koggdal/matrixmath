@@ -918,4 +918,18 @@ describe('Matrix', function() {
 
   });
 
+  describe('#isIdentity()', function() {
+
+    it('should return false for a matrix that is not an identity matrix', function() {
+      var matrix = new Matrix(3, 3, false).setData([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      expect(matrix.isIdentity()).to.equal(false);
+    });
+
+    it('should return true for a matrix that is an identity matrix', function() {
+      var matrix = new Matrix(3, 3, false).setData([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+      expect(matrix.isIdentity()).to.equal(true);
+    });
+
+  });
+
 });

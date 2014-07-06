@@ -58,6 +58,7 @@ var Matrix = require('matrixmath/Matrix');
 * invert ()
 * getDeterminant ()
 * equals (input)
+* isIdentity ()
 
 
 
@@ -529,6 +530,20 @@ var matrix2 = new Matrix(2, 2).setData(3, 0, 2, 0);
 
 matrix.equals(matrix1); // true
 matrix.equals(matrix2); // false
+```
+
+#### matrix.isIdentity()
+
+Tests if the data of the matrix represents the identity matrix. Returns `true` if it is, `false` otherwise.
+
+```
+var matrix = new Matrix(3, 3);
+var matrix1 = new Matrix(3, 3, false).setData(1, 0, 0, 0, 1, 0, 0, 0, 1);
+var matrix2 = new Matrix(3, 3, false).setData(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+matrix.isIdentity(); // true
+matrix1.isIdentity(); // true
+matrix2.isIdentity(); // false
 ```
 
 

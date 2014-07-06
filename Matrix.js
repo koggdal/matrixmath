@@ -736,4 +736,19 @@ Matrix.prototype.equals = function(input) {
   return true;
 };
 
+/**
+ * Tests if the data of the matrix represents the identity matrix.
+ *
+ * @return {boolean} True if it is the identity matrix, false otherwise.
+ */
+Matrix.prototype.isIdentity = function() {
+  for (var i = 0, l = this.length; i < l; i++) {
+    if (this[i] !== (i % (this.cols + 1) ? 0 : 1)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 module.exports = Matrix;
