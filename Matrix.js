@@ -3,6 +3,8 @@
  */
 'use strict';
 
+var arrays = require('./arrays');
+
 /**
  * @classdesc A class for representing and working with a mathematical matrix.
  *
@@ -220,10 +222,7 @@ Matrix.prototype.setData = function(data, opt_rows, opt_cols) {
  * @return {Array} An array of numbers, representing the data of the matrix.
  */
 Matrix.prototype.getData = function() {
-  var data = this.toArray();
-  data.rows = this.rows;
-  data.cols = this.cols;
-  return data;
+  return getData(this, new Array(this.length));
 };
 
 /**
@@ -232,13 +231,7 @@ Matrix.prototype.getData = function() {
  * @return {Array} An array of numbers.
  */
 Matrix.prototype.toArray = function() {
-  var data = new Array(this.length);
-
-  for (var i = 0, l = this.length; i < l; i++) {
-    data[i] = this[i];
-  }
-
-  return data;
+  return toArray(this, new Array(this.length));
 };
 
 /**
@@ -446,7 +439,7 @@ Matrix.prototype.multiply = function(var_args) {
     }
   }
 
-  var newRows = this.getData();
+  var newRows = getData(this, arrays.getWithLength(this.length));
 
   // Loop through all the matrices passed to the method
   for (var i = startIndex, l = matrices.length; i < l; i++) {
@@ -487,7 +480,7 @@ Matrix.prototype.multiply = function(var_args) {
 
     // Create a temporary data array.
     // This will be used to store values in while reading from newRows.
-    var tempData = new Array(newRows.length);
+    var tempData = arrays.getWithLength(newRows.length);
     tempData.rows = newRows.rows;
     tempData.cols = matrix.cols;
 
@@ -511,6 +504,7 @@ Matrix.prototype.multiply = function(var_args) {
         }
       }
     }
+    arrays.giveBack(newRows);
 
     // Save the temporary data array in newRows, so that the next matrix can be applied
     // to the output of this iteration instead of the original data.
@@ -519,6 +513,8 @@ Matrix.prototype.multiply = function(var_args) {
 
   // Set the new data for this Matrix instance
   this.setData(newRows, newRows.rows, newRows.cols);
+
+  arrays.giveBack(newRows);
 
   return this;
 };
@@ -591,7 +587,7 @@ Matrix.prototype.transpose = function() {
   var numRows = this.rows;
   var numCols = this.cols;
 
-  var newData = new Array(this.length);
+  var newData = arrays.getWithLength(this.length);
 
   for (var row = 0; row < numRows; row++) {
     for (var col = 0; col < numCols; col++) {
@@ -600,6 +596,8 @@ Matrix.prototype.transpose = function() {
   }
 
   this.setData(newData);
+
+  arrays.giveBack(newData);
 
   return this;
 };
@@ -630,13 +628,21 @@ Matrix.prototype.invert = function() {
   for (var row = 0; row < numRows; row++) {
     for (var col = 0; col < numCols; col++) {
 
+      // We need to get a temporary copy of the matrix data in an array
+      var newData = arrays.getWithLength(this.length);
+      for (var d = this.length; d--;) {
+        newData[d] = this[d];
+      }
+
       // We need to get the determinant of the matrix made by the area
       // that is not in the current number's row or column. To do this,
       // we remove the first row and the column where the number is.
-      var newData = this.toArray();
       removeRow(newData, row, this.cols);
       removeColumn(newData, col, this.cols);
       matrix.setData(newData, this.rows - 1, this.cols - 1);
+
+      // We're now done with the temporary copy of the matrix data
+      arrays.giveBack(newData);
 
       // Set the determinant in the correct position in the matrix of minors.
       // Every other position is multiplied by -1 to get a matrix of cofactors.
@@ -721,13 +727,21 @@ Matrix.prototype.getDeterminant = function() {
     // Loop through each number for the first row
     for (var col = 0; col < cols; col++) {
 
+      // We need to get a temporary copy of the matrix data in an array
+      var newData = arrays.getWithLength(this.length);
+      for (var d = this.length; d--;) {
+        newData[d] = this[d];
+      }
+
       // We need to get the determinant of the matrix made by the area
       // that is not in the current number's row or column. To do this,
       // we remove the first row and the column where the number is.
-      var newData = this.getData();
       removeRow(newData, 0, this.cols);
       removeColumn(newData, col, this.cols);
       matrix.setData(newData, this.rows - 1, this.cols - 1);
+
+      // We're now done with the temporary copy of the matrix data
+      arrays.giveBack(newData);
 
       result += (col % 2 ? -1 : 1) * this[col] * matrix.getDeterminant();
     }
@@ -803,6 +817,43 @@ function removeColumn(values, col, colsPerRow) {
     if (i % colsPerRow !== col) values[n++] = values[i];
   }
   values.length = n;
+}
+
+/**
+ * Convert a matrix to an array with the values.
+ *
+ * @param {Matrix} matrix The matrix instance.
+ * @param {Array} array The array to use.
+ *
+ * @return {Array} The array.
+ *
+ * @private
+ */
+function toArray(matrix, array) {
+  for (var i = 0, l = matrix.length; i < l; i++) {
+    array[i] = matrix[i];
+  }
+
+  return array;
+}
+
+/**
+ * Get the matrix data as an array with properties for rows and cols.
+ *
+ * @param {Matrix} matrix The matrix instance.
+ * @param {Array} array The array to use.
+ *
+ * @return {Array} The array.
+ *
+ * @private
+ */
+function getData(matrix, array) {
+  toArray(matrix, array);
+
+  array.rows = matrix.rows;
+  array.cols = matrix.cols;
+
+  return array;
 }
 
 module.exports = Matrix;
