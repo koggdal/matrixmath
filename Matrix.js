@@ -152,13 +152,9 @@ Matrix.prototype.setEmptyData = function() {
  * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.setIdentityData = function() {
-  var newData = new Array(this.length);
-
   for (var i = 0, l = this.length; i < l; i++) {
-    newData[i] = i % (this.cols + 1) ? 0 : 1;
+    this[i] = i % (this.cols + 1) ? 0 : 1;
   }
-
-  this.setData(newData);
 
   return this;
 };
