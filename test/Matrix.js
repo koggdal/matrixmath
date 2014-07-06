@@ -516,6 +516,71 @@ describe('Matrix', function() {
 
   });
 
+  describe('#copy()', function() {
+
+    it('should return the same Matrix instance', function() {
+      var matrix1 = new Matrix(2, 2).setData([1, 0, 0, 1]);
+      var matrix2 = new Matrix(2, 2).setData([1, 2, 3, 4]);
+
+      expect(matrix1.copy(matrix2)).to.equal(matrix1);
+    });
+
+    it('should set the data from the input matrix on this matrix', function() {
+      var matrix1 = new Matrix(2, 2).setData([1, 0, 0, 1]);
+      var matrix2 = new Matrix(2, 2).setData([1, 2, 3, 4]);
+
+      matrix1.copy(matrix2);
+
+      expect(matrix1.toArray()).to.eql([1, 2, 3, 4]);
+    });
+
+    it('should resize this matrix to the size of the input matrix (larger)', function() {
+      var matrix1 = new Matrix(2, 2).setData([1, 0, 0, 1]);
+      var matrix2 = new Matrix(4, 3).setData([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+
+      matrix1.copy(matrix2);
+
+      expect(matrix1.length).to.equal(12);
+      expect(matrix1.rows).to.equal(4);
+      expect(matrix1.cols).to.equal(3);
+      expect(matrix1.toArray()).to.eql([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    });
+
+    it('should resize this matrix to the size of the input matrix (smaller)', function() {
+      var matrix1 = new Matrix(4, 3).setData([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      var matrix2 = new Matrix(2, 2).setData([1, 0, 0, 1]);
+
+      matrix1.copy(matrix2);
+
+      expect(matrix1.length).to.equal(4);
+      expect(matrix1.rows).to.equal(2);
+      expect(matrix1.cols).to.equal(2);
+      expect(matrix1.toArray()).to.eql([1, 0, 0, 1]);
+    });
+
+    it('should clear out values not needed anymore if the input matrix is smaller', function() {
+      var matrix1 = new Matrix(4, 3).setData([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      var matrix2 = new Matrix(2, 2).setData([1, 0, 0, 1]);
+
+      matrix1.copy(matrix2);
+
+      expect(matrix1.length).to.equal(4);
+      expect(matrix1.rows).to.equal(2);
+      expect(matrix1.cols).to.equal(2);
+      expect(matrix1.toArray()).to.eql([1, 0, 0, 1]);
+
+      expect('4' in matrix1).to.equal(false);
+      expect('5' in matrix1).to.equal(false);
+      expect('6' in matrix1).to.equal(false);
+      expect('7' in matrix1).to.equal(false);
+      expect('8' in matrix1).to.equal(false);
+      expect('9' in matrix1).to.equal(false);
+      expect('10' in matrix1).to.equal(false);
+      expect('11' in matrix1).to.equal(false);
+    });
+
+  });
+
   describe('#clone()', function() {
 
     var matrix1 = new Matrix(2, 2).setData([1, 0, 0, 1]);

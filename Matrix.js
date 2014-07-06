@@ -285,6 +285,38 @@ Matrix.prototype.toLogString = function(opt_indentation, opt_separator, opt_star
 };
 
 /**
+ * Copy data from the input matrix to this matrix.
+ *
+ * @param {Matrix} matrix Input matrix to copy from.
+ *
+ * @return {Matrix} This Matrix instance.
+ */
+Matrix.prototype.copy = function(matrix) {
+  var i, l;
+
+  // If the input matrix is smaller, clear out the values not needed anymore
+  if (matrix.length < this.length) {
+    for (i = matrix.length, l = this.length; i < l; i++) {
+      delete this[i];
+    }
+  }
+
+  // Set new metadata if the matrices are of different size
+  if (matrix.length !== this.length) {
+    this.length = matrix.length;
+    this.rows = matrix.rows;
+    this.cols = matrix.cols;
+  }
+
+  // Copy the data from the input matrix to this matrix
+  for (i = 0, l = this.length; i < l; i++) {
+    this[i] = matrix[i];
+  }
+
+  return this;
+};
+
+/**
  * Clone this matrix to a new instance.
  *
  * @return {Matrix} A new matrix for the result.

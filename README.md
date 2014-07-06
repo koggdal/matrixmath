@@ -47,6 +47,7 @@ var Matrix = require('matrixmath/Matrix');
 * getData ()
 * toArray ()
 * toLogString ()
+* copy (matrix)
 * clone ()
 * add (matrix[,…matrixN])
 * subtract (matrix[,…matrixN])
@@ -339,6 +340,24 @@ var matrix = new Matrix(3, 3);
 0 | 0 | 1
 -- end --
 ```
+
+#### matrix.copy(matrix1)
+
+Copies the data from another matrix into the original matrix.
+
+```
+var matrix = new Matrix(2, 2);
+var matrix1 = new Matrix(2, 2, false).setData(1, 2, 3, 4);
+matrix.copy(matrix1);
+```
+```
+> console.log(matrix.toLogString());
+[
+  1  2
+  3  4
+]
+```
+
 
 #### matrix.clone()
 
