@@ -561,7 +561,7 @@ The Matrix class is fully unit tested. It uses mocha and expect.js and can be ru
 
 The project is licensed under the MIT license.
 
-Copyright (c) 2013 Johannes Koggdal
+Copyright (c) 2014 Johannes Koggdal
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
