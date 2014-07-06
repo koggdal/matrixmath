@@ -673,7 +673,11 @@ Matrix.prototype.invert = function() {
   // Multiply the matrix of minors with the inverse of the determinant,
   // to get the final inverse of the original matrix.
   var product = matrixOfMinors.multiply(1 / originalDeterminant);
-  this.setData(product.getData(), product.rows, product.cols);
+
+  // Copy the data from the inverted temp matrix to this matrix
+  for (var x = 0, y = product.length; x < y; x++) {
+    this[x] = product[x];
+  }
 
   return this;
 };
