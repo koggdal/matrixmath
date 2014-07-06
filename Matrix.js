@@ -196,7 +196,7 @@ Matrix.prototype.setData = function(data, opt_rows, opt_cols) {
   }
 
   // Clean out previous data
-  for (i = 0, l = this.length; i < l; i++) {
+  for (i = data.length, l = this.length; i < l; i++) {
     delete this[i];
   }
 
