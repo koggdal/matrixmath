@@ -135,6 +135,8 @@ Matrix.divide = function(var_args) {
 
 /**
  * Set the data for this matrix to be only zeros.
+ *
+ * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.setEmptyData = function() {
   var newData = new Array(this.length);
