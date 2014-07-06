@@ -139,13 +139,9 @@ Matrix.divide = function(var_args) {
  * @return {Matrix} This Matrix instance.
  */
 Matrix.prototype.setEmptyData = function() {
-  var newData = new Array(this.length);
-
   for (var i = 0, l = this.length; i < l; i++) {
-    newData[i] = 0;
+    this[i] = 0;
   }
-
-  this.setData(newData);
 
   return this;
 };
