@@ -620,19 +620,6 @@ Matrix.prototype.invert = function() {
   // The matrix must be square
   if (numRows !== numCols) return this;
 
-  var removeRow = function(values, row, colsPerRow) {
-    values.splice(row * colsPerRow, colsPerRow);
-    return values;
-  };
-
-  var removeColumn = function(values, col, colsPerRow) {
-    var newData = [];
-    for (var i = 0, l = values.length; i < l; i++) {
-      if (i % colsPerRow !== col) newData.push(values[i]);
-    }
-    return newData;
-  };
-
   // By using a cache, only the first call to invert will cause a memory increase.
   var cache = this._cache || (this._cache = {});
   var matrixOfMinors = cache.matrixOfMinors || (cache.matrixOfMinors = new Matrix(numRows, numCols, false));
@@ -646,9 +633,9 @@ Matrix.prototype.invert = function() {
       // We need to get the determinant of the matrix made by the area
       // that is not in the current number's row or column. To do this,
       // we remove the first row and the column where the number is.
-      var newData = this.getData();
-      newData = removeRow(newData, row, this.cols);
-      newData = removeColumn(newData, col, this.cols);
+      var newData = this.toArray();
+      removeRow(newData, row, this.cols);
+      removeColumn(newData, col, this.cols);
       matrix.setData(newData, this.rows - 1, this.cols - 1);
 
       // Set the determinant in the correct position in the matrix of minors.
@@ -725,19 +712,6 @@ Matrix.prototype.getDeterminant = function() {
   // For 4x4 or larger matrices
   if (rows >= 4) {
 
-    var removeRow = function(values, row, colsPerRow) {
-      values.splice(row * colsPerRow, colsPerRow);
-      return values;
-    };
-
-    var removeColumn = function(values, col, colsPerRow) {
-      var newData = [];
-      for (var i = 0, l = values.length; i < l; i++) {
-        if (i % colsPerRow !== col) newData.push(values[i]);
-      }
-      return newData;
-    };
-
     var result = 0;
 
     // By using a cache, only the first call to the method will cause a memory increase.
@@ -751,8 +725,8 @@ Matrix.prototype.getDeterminant = function() {
       // that is not in the current number's row or column. To do this,
       // we remove the first row and the column where the number is.
       var newData = this.getData();
-      newData = removeRow(newData, 0, this.cols);
-      newData = removeColumn(newData, col, this.cols);
+      removeRow(newData, 0, this.cols);
+      removeColumn(newData, col, this.cols);
       matrix.setData(newData, this.rows - 1, this.cols - 1);
 
       result += (col % 2 ? -1 : 1) * this[col] * matrix.getDeterminant();
@@ -800,5 +774,35 @@ Matrix.prototype.isIdentity = function() {
 
   return true;
 };
+
+/**
+ * Remove a row from the values array.
+ *
+ * @param {Array} values Array of values.
+ * @param {number} row Index of the row.
+ * @param {number} colsPerRow Number of columns per row.
+ *
+ * @private
+ */
+function removeRow(values, row, colsPerRow) {
+  values.splice(row * colsPerRow, colsPerRow);
+}
+
+/**
+ * Remove a column from the values array.
+ *
+ * @param {Array} values Array of values.
+ * @param {number} col Index of the column.
+ * @param {number} colsPerRow Number of columns per row.
+ *
+ * @private
+ */
+function removeColumn(values, col, colsPerRow) {
+  var n = 0;
+  for (var i = 0, l = values.length; i < l; i++) {
+    if (i % colsPerRow !== col) values[n++] = values[i];
+  }
+  values.length = n;
+}
 
 module.exports = Matrix;
