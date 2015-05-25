@@ -620,7 +620,7 @@ Matrix.prototype.invert = function() {
 
   // By using a cache, only the first call to invert will cause a memory increase.
   var cache = this._cache || (this._cache = {});
-  var matrixOfMinors = cache.matrixOfMinors || (cache.matrixOfMinors = new Matrix(numRows, numCols, false));
+  var matrixOfCoFactors = cache.matrixOfCoFactors || (cache.matrixOfCoFactors = new Matrix(numRows, numCols, false));
   var matrix = cache.tempMatrix || (cache.tempMatrix = new Matrix(this.rows, this.cols, false));
 
   // Loop through each number in the matrix
@@ -644,9 +644,17 @@ Matrix.prototype.invert = function() {
       // We're now done with the temporary copy of the matrix data
       arrays.giveBack(newData);
 
-      // Set the determinant in the correct position in the matrix of minors.
-      // Every other position is multiplied by -1 to get a matrix of cofactors.
-      matrixOfMinors[row * matrixOfMinors.cols + col] = (i % 2 ? -1 : 1) * matrix.getDeterminant();
+      // Some of the determinants need to change sign to become the cofactor.
+      // This is applied as a checkerboard to the matrix.
+      var coFactor = matrix.getDeterminant();
+      var rowAlternate = row % 2 === 1;
+      var colAlternate = col % 2 === 1;
+      if ((rowAlternate && !colAlternate) || (colAlternate && !rowAlternate)) {
+        coFactor *= -1;
+      }
+
+      // Set the cofactor in the correct position in the matrix of cofactors.
+      matrixOfCoFactors[row * matrixOfCoFactors.cols + col] = coFactor;
 
       i++;
     }
@@ -656,18 +664,18 @@ Matrix.prototype.invert = function() {
   // This could be done with the getDeterminant method, but this is faster.
   var originalDeterminant = 0;
   for (var n = 0; n < numCols; n++) {
-    originalDeterminant += this[n] * matrixOfMinors[n];
+    originalDeterminant += this[n] * matrixOfCoFactors[n];
   }
 
   // Cancel everything if the determinant is zero, since inversion can't be done then
   if (originalDeterminant === 0) return this;
 
-  // Transpose the cofactor matrix of minors to get the adjugate matrix
-  matrixOfMinors.transpose();
+  // Transpose the cofactor of cofactors to get the adjugate matrix
+  matrixOfCoFactors.transpose();
 
-  // Multiply the matrix of minors with the inverse of the determinant,
+  // Multiply the matrix of cofactors with the inverse of the determinant,
   // to get the final inverse of the original matrix.
-  var product = matrixOfMinors.multiply(1 / originalDeterminant);
+  var product = matrixOfCoFactors.multiply(1 / originalDeterminant);
 
   // Copy the data from the inverted temp matrix to this matrix
   for (var x = 0, y = product.length; x < y; x++) {

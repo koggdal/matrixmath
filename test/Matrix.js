@@ -844,7 +844,17 @@ describe('Matrix', function() {
 
   describe('#invert()', function() {
 
-    it('should invert a square matrix', function() {
+    it('should invert a square 2x2 matrix', function() {
+      var matrix1 = new Matrix(2, 2).setData([0, -600, 240, 240]);
+      matrix1.invert();
+
+      expect(matrix1[0]).to.equal(1/600);
+      expect(matrix1[1]).to.equal(1/240);
+      expect(matrix1[2]).to.equal(-1/600);
+      expect(matrix1[3]).to.equal(0);
+    });
+
+    it('should invert a square 3x3 matrix', function() {
       var matrix1 = new Matrix(3, 3).setData([3, 0, 2, 2, 0, -2, 0, 1, 1]);
       matrix1.invert();
 
@@ -857,6 +867,28 @@ describe('Matrix', function() {
       expect(matrix1[6]).to.equal(0.2);
       expect(matrix1[7]).to.equal(-0.3);
       expect(matrix1[8]).to.equal(0);
+    });
+
+    it('should invert a square 4x4 matrix', function() {
+      var matrix1 = new Matrix(4, 4).setData([4, 0, 0, 0, 0, 0, 2, 0, 0, 1, 2, 0, 1, 0, 0, 1]);
+      matrix1.invert();
+
+      expect(matrix1[0]).to.equal(0.25);
+      expect(matrix1[1]).to.equal(0);
+      expect(matrix1[2]).to.equal(0);
+      expect(matrix1[3]).to.equal(0);
+      expect(matrix1[4]).to.equal(0);
+      expect(matrix1[5]).to.equal(-1);
+      expect(matrix1[6]).to.equal(1);
+      expect(matrix1[7]).to.equal(0);
+      expect(matrix1[8]).to.equal(0);
+      expect(matrix1[9]).to.equal(0.5);
+      expect(matrix1[10]).to.equal(0);
+      expect(matrix1[11]).to.equal(0);
+      expect(matrix1[12]).to.equal(-0.25);
+      expect(matrix1[13]).to.equal(0);
+      expect(matrix1[14]).to.equal(0);
+      expect(matrix1[15]).to.equal(1);
     });
 
     it('should not invert a non-square matrix', function() {
