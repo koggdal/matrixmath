@@ -618,6 +618,24 @@ Matrix.prototype.invert = function() {
   // The matrix must be square
   if (numRows !== numCols) return this;
 
+  // Simple solution for 2x2 matrices
+  if (numRows === 2) {
+    var determinant = this.getDeterminant();
+    if (determinant === 0) return this;
+
+    var invertedDeterminant = 1 / determinant;
+    var m0 = invertedDeterminant * this[3];
+    var m1 = invertedDeterminant * -this[1];
+    var m2 = invertedDeterminant * -this[2];
+    var m3 = invertedDeterminant * this[0];
+    this[0] = m0;
+    this[1] = m1;
+    this[2] = m2;
+    this[3] = m3;
+
+    return this;
+  }
+
   // By using a cache, only the first call to invert will cause a memory increase.
   var cache = this._cache || (this._cache = {});
   var matrixOfCoFactors = cache.matrixOfCoFactors || (cache.matrixOfCoFactors = new Matrix(numRows, numCols, false));
