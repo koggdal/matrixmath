@@ -2,6 +2,19 @@
 
 This JavaScript module contains a Matrix class that will help you work with mathematical matrices.
 
+## Table of Contents
+
+* [Usage](#usage)
+* [API](#api)
+  * [Overview](#overview)
+  * [Constructor](#constructor)
+  * [Instance properties](#instance-properties)
+  * [Static methods](#static-methods)
+  * [Instance methods](#instance-methods)
+* [Versioning](#versioning)
+* [Unit tests](#unit-tests)
+* [License](#license)
+
 ## Usage
 
 The module is created in the CommonJS format, exporting using module.exports, meaning you need a CommonJS require system to use it. It is published in npm, so including it in node.js is simple:
