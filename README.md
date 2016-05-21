@@ -554,7 +554,11 @@ This module is versioned according to [Semantic Versioning](http://semver.org/) 
 
 ## Unit tests
 
-The Matrix class is fully unit tested. It uses mocha and expect.js and can be run from node.js in the command line.
+The Matrix class is fully unit tested. It uses mocha and expect.js. Just run the tests from the command line:
+
+```
+npm run test
+```
 
 
 ## License

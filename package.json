@@ -4,6 +4,9 @@
   "author": "Johannes Koggdal <johannes@koggdal.com>",
   "description": "Library for working with mathematical matrices.",
   "main": "./index",
+  "scripts": {
+    "test": "mocha test/test.js -R spec"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/koggdal/matrixmath.git"
