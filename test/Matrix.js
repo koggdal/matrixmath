@@ -710,6 +710,14 @@ describe('Matrix', function() {
       expect(matrix1[1]).to.equal(2);
     });
 
+    it('should multiply a non squared matrices where the number of columns in first one matches number of rows in second', function() {
+      var matrix1 = new Matrix(2, 3).setData([1, 2, 3, 4, 5, 6]);
+      var matrix2 = new Matrix(3, 1).setData([8, 10, 12]);
+      matrix1.multiply(matrix2);
+      expect(matrix1[0]).to.equal(64);
+      expect(matrix1[1]).to.equal(154);
+    });
+
     it('should multiply all matrices passed in to the method', function() {
       var matrix1 = new Matrix(2, 2).setData([1, 2, 3, 4]);
       var matrix2 = new Matrix(2, 2).setData([2, 4, 6, 8]);
@@ -826,13 +834,24 @@ describe('Matrix', function() {
 
     var matrix1 = new Matrix(2, 2).setData([1, 2, 4, 1]);
 
-    it('should transpose the matrix', function() {
+    it('should transpose the squared matrix', function() {
       matrix1.transpose();
 
       expect(matrix1[0]).to.equal(1);
       expect(matrix1[1]).to.equal(4);
       expect(matrix1[2]).to.equal(2);
       expect(matrix1[3]).to.equal(1);
+    });
+
+    it('should transpose the non-squared matrix', function() {
+      var matrix = new Matrix(2, 3).setData([1, 2, 4, 1, 3, 5]);
+      matrix.transpose();
+      expect(matrix[0]).to.equal(1);
+      expect(matrix[1]).to.equal(1);
+      expect(matrix[2]).to.equal(2);
+      expect(matrix[3]).to.equal(3);
+      expect(matrix[4]).to.equal(4);
+      expect(matrix[5]).to.equal(5);
     });
 
     it('should return the instance', function() {
