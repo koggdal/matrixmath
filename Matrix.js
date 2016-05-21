@@ -480,7 +480,7 @@ Matrix.prototype.multiply = function(var_args) {
 
     // Create a temporary data array.
     // This will be used to store values in while reading from newRows.
-    var tempData = arrays.getWithLength(newRows.length);
+    var tempData = arrays.getWithLength(newRows.rows * matrix.cols);
     tempData.rows = newRows.rows;
     tempData.cols = matrix.cols;
 
@@ -512,7 +512,7 @@ Matrix.prototype.multiply = function(var_args) {
   }
 
   // Set the new data for this Matrix instance
-  this.setData(newRows.slice(0, newRows.rows * newRows.cols), newRows.rows, newRows.cols);
+  this.setData(newRows, newRows.rows, newRows.cols);
 
   arrays.giveBack(newRows);
 
