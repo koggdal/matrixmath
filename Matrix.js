@@ -480,7 +480,7 @@ Matrix.prototype.multiply = function(var_args) {
 
     // Create a temporary data array.
     // This will be used to store values in while reading from newRows.
-    var tempData = arrays.getWithLength(newRows.length);
+    var tempData = arrays.getWithLength(newRows.rows * matrix.cols);
     tempData.rows = newRows.rows;
     tempData.cols = matrix.cols;
 
@@ -591,11 +591,10 @@ Matrix.prototype.transpose = function() {
 
   for (var row = 0; row < numRows; row++) {
     for (var col = 0; col < numCols; col++) {
-      newData[col * numCols + row] = this[row * numCols + col];
+      newData[col * numRows + row] = this[row * numCols + col];
     }
   }
-
-  this.setData(newData);
+  this.setData(newData, numCols, numRows);
 
   arrays.giveBack(newData);
 
