@@ -805,6 +805,10 @@ Matrix.prototype.equals = function(input) {
  * @return {boolean} True if it is the identity matrix, false otherwise.
  */
 Matrix.prototype.isIdentity = function() {
+  if (this.cols !== this.rows) {
+      // An identity matrix must be square.
+      return false;
+  }
   for (var i = 0, l = this.length; i < l; i++) {
     if (this[i] !== (i % (this.cols + 1) ? 0 : 1)) {
       return false;
