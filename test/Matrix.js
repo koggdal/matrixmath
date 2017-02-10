@@ -118,6 +118,7 @@ describe('Matrix', function() {
     var matrix2 = new Matrix(2, 2).setData([2, 4, 6, 8]);
     var matrix3 = new Matrix(2, 2).setData([3, 6, 9, 12]);
     var matrix4 = new Matrix(1, 3).setData([8, 10, 12]);
+    var matrix5 = new Matrix(3, 1).setData([1, 0, 1]);
 
     it('should return an instance of Matrix', function() {
       var product = Matrix.multiply(matrix1, matrix2);
@@ -127,6 +128,11 @@ describe('Matrix', function() {
     it('should multiply two square matrices of the same size', function() {
       var product = Matrix.multiply(matrix1, matrix2);
       expect(product[1]).to.equal(20);
+    });
+
+    it('should multiply compatible matrices of different sizes', function() {
+      var product = Matrix.multiply(matrix4, matrix5);
+      expect(product[0]).to.equal(20);
     });
 
     it('should multiply a matrix with a number', function() {
@@ -1007,6 +1013,11 @@ describe('Matrix', function() {
     it('should return true for a matrix that is an identity matrix', function() {
       var matrix = new Matrix(3, 3, false).setData([1, 0, 0, 0, 1, 0, 0, 0, 1]);
       expect(matrix.isIdentity()).to.equal(true);
+    });
+
+    it('should return false for a non-square matrix', function() {
+      var matrix = new Matrix(3, 1, false).setData([1, 0, 1]);
+      expect(matrix.isIdentity()).to.equal(false);
     });
 
   });
